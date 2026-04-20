@@ -65,6 +65,12 @@ function getHonoPath(routeFile: string): { name: string; pattern: string }[] {
 
 // Import and register all routes
 async function registerRoutes() {
+  // In production, skip file scanning as routes are already bundled
+  if (!import.meta.env.DEV) {
+    console.log('Production mode: skipping route file scanning');
+    return;
+  }
+
   const routeFiles = (
     await findRouteFiles(__dirname).catch((error) => {
       console.error('Error finding route files:', error);
@@ -131,8 +137,55 @@ async function registerRoutes() {
   }
 }
 
-// Initial route registration
-await registerRoutes();
+// Static route registration for production
+if (!import.meta.env.DEV) {
+  // Import all API routes statically
+  const routes = import.meta.glob('../src/app/api/**/route.js', { eager: true });
+
+  for (const [path, module] of Object.entries(routes)) {
+    const route = module as any;
+    const methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+
+    // Extract route path from file path
+    const routePath = path
+      .replace('../src/app/api', '')
+      .replace('/route.js', '')
+      .replace(/\[\.\.\.([^\]]+)\]/g, ':$1{.+}')
+      .replace(/\[([^\]]+)\]/g, ':$1')
+      || '/';
+
+    for (const method of methods) {
+      if (route[method]) {
+        const handler = async (c: any) => {
+          const params = c.req.param();
+          return await route[method](c.req.raw, { params });
+        };
+
+        const methodLowercase = method.toLowerCase();
+        switch (methodLowercase) {
+          case 'get':
+            api.get(routePath, handler);
+            break;
+          case 'post':
+            api.post(routePath, handler);
+            break;
+          case 'put':
+            api.put(routePath, handler);
+            break;
+          case 'delete':
+            api.delete(routePath, handler);
+            break;
+          case 'patch':
+            api.patch(routePath, handler);
+            break;
+        }
+      }
+    }
+  }
+} else {
+  // Initial route registration for development
+  await registerRoutes();
+}
 
 // Hot reload routes in development
 if (import.meta.env.DEV) {
