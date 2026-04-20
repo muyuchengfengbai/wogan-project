@@ -1,0 +1,23 @@
+.DS_Store
+/node_modules/
+
+# React Router
+/.react-router/
+/build/
+
+# Environment
+.env
+.env.local
+
+# Database
+pgdata/
+*.log
+logfile
+
+# Tests
+test-results/
+playwright-report/
+
+# Uploads
+public/uploads/*
+!public/uploads/.gitkeep
