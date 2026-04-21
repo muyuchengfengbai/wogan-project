@@ -18,9 +18,12 @@ export default defineConfig({
   envPrefix: 'NEXT_PUBLIC_',
   build: {
     target: 'esnext',
+    sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         format: 'es',
+        manualChunks: undefined,
       },
     },
   },
