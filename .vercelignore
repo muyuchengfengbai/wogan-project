@@ -1,6 +1,12 @@
 node_modules
-.env
+.git
 .env.local
+.env.development
 *.log
-pgdata
+.DS_Store
+tests
+playwright-report
 test-results
+pgdata
+*.md
+!README.md
