@@ -1,19 +1,4 @@
 {
-  "version": 2,
   "buildCommand": "npm install --legacy-peer-deps && npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
-  "outputDirectory": "build/client",
-  "functions": {
-    "api/index.js": {
-      "memory": 1024,
-      "maxDuration": 30,
-      "includeFiles": "build/server/**"
-    }
-  },
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.js"
-    }
-  ]
+  "installCommand": "npm install --legacy-peer-deps"
 }
